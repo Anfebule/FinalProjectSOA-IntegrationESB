@@ -1,0 +1,297 @@
+<metadata__catalog__entry>
+  <version>5.2.0.0</version>
+  <types class="tree-map">
+    <entry>
+      <org.mule.common.metadata.DefaultMetaDataKey>
+        <id>consultaPrestamo</id>
+        <displayName>consultaPrestamo</displayName>
+        <category>DEFAULT</category>
+        <metaDataKeyPropertiesManager>
+          <properties>
+            <org.mule.common.metadata.key.property.dsql.DsqlFromMetaDataKeyProperty/>
+          </properties>
+        </metaDataKeyPropertiesManager>
+      </org.mule.common.metadata.DefaultMetaDataKey>
+      <org.mule.common.metadata.DefaultXmlMetaDataModel>
+        <dataType>XML</dataType>
+        <metaDataModelPropertiesManager>
+          <properties>
+            <org.mule.common.metadata.property.TextBasedExampleMetaDataModelProperty/>
+            <org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+              <typeQName>
+                <namespaceURI>http://controller/</namespaceURI>
+                <localPart>consultaPrestamo</localPart>
+                <prefix></prefix>
+              </typeQName>
+            </org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+            <org.mule.common.metadata.property.StructureIdentifierMetaDataModelProperty>
+              <metaDataKey class="org.mule.common.metadata.DefaultMetaDataKey" reference="../../../../../org.mule.common.metadata.DefaultMetaDataKey"/>
+              <derivedStructure>false</derivedStructure>
+              <generatedStructure>false</generatedStructure>
+            </org.mule.common.metadata.property.StructureIdentifierMetaDataModelProperty>
+          </properties>
+        </metaDataModelPropertiesManager>
+        <fields/>
+        <rootElement>
+          <namespaceURI>http://controller/</namespaceURI>
+          <localPart>consultaPrestamo</localPart>
+          <prefix>ns0</prefix>
+        </rootElement>
+        <schemas class="org.mule.common.metadata.StringBasedSchemaProvider">
+          <schemas>
+            <string>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;xsd:schema xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:ns1=&quot;http://schemas.xmlsoap.org/soap/http&quot; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot; xmlns:tns=&quot;http://controller/&quot; xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot; attributeFormDefault=&quot;qualified&quot; elementFormDefault=&quot;qualified&quot; targetNamespace=&quot;http://controller/&quot;&gt;&#xd;
+  &lt;xsd:complexType name=&quot;string2stringHashMap&quot;&gt;&#xd;
+    &lt;xsd:sequence&gt;&#xd;
+      &lt;xsd:element maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot; name=&quot;entry&quot;&gt;&#xd;
+        &lt;xsd:complexType&gt;&#xd;
+          &lt;xsd:sequence&gt;&#xd;
+            &lt;xsd:element name=&quot;key&quot; type=&quot;xsd:string&quot;/&gt;&#xd;
+            &lt;xsd:element minOccurs=&quot;0&quot; name=&quot;value&quot; type=&quot;xsd:string&quot;/&gt;&#xd;
+          &lt;/xsd:sequence&gt;&#xd;
+        &lt;/xsd:complexType&gt;&#xd;
+      &lt;/xsd:element&gt;&#xd;
+    &lt;/xsd:sequence&gt;&#xd;
+  &lt;/xsd:complexType&gt;&#xd;
+  &lt;xsd:element name=&quot;consultaPrestamo&quot; type=&quot;tns:consultaPrestamo&quot;/&gt;&#xd;
+  &lt;xsd:complexType name=&quot;consultaPrestamo&quot;&gt;&#xd;
+    &lt;xsd:sequence/&gt;&#xd;
+  &lt;/xsd:complexType&gt;&#xd;
+  &lt;xsd:element name=&quot;consultaPrestamoResponse&quot; type=&quot;tns:consultaPrestamoResponse&quot;/&gt;&#xd;
+  &lt;xsd:complexType name=&quot;consultaPrestamoResponse&quot;&gt;&#xd;
+    &lt;xsd:sequence&gt;&#xd;
+      &lt;xsd:element minOccurs=&quot;0&quot; name=&quot;return&quot; nillable=&quot;true&quot; type=&quot;tns:string2stringHashMap&quot;/&gt;&#xd;
+    &lt;/xsd:sequence&gt;&#xd;
+  &lt;/xsd:complexType&gt;&#xd;
+&lt;/xsd:schema&gt;</string>
+          </schemas>
+          <encoding>windows-1252</encoding>
+          <baseUri>http://localhost:8082/BancoChibcha?wsdl</baseUri>
+        </schemas>
+        <namespaceManager>
+          <namespacePrefix class="tree-map">
+            <entry>
+              <string>http://controller/</string>
+              <string>ns0</string>
+            </entry>
+          </namespacePrefix>
+        </namespaceManager>
+      </org.mule.common.metadata.DefaultXmlMetaDataModel>
+    </entry>
+    <entry>
+      <org.mule.common.metadata.DefaultMetaDataKey>
+        <id>consultaPrestamoResponse</id>
+        <displayName>consultaPrestamoResponse</displayName>
+        <category>DEFAULT</category>
+        <metaDataKeyPropertiesManager>
+          <properties>
+            <org.mule.common.metadata.key.property.dsql.DsqlFromMetaDataKeyProperty/>
+          </properties>
+        </metaDataKeyPropertiesManager>
+      </org.mule.common.metadata.DefaultMetaDataKey>
+      <org.mule.common.metadata.DefaultXmlMetaDataModel>
+        <dataType>XML</dataType>
+        <metaDataModelPropertiesManager>
+          <properties>
+            <org.mule.common.metadata.property.TextBasedExampleMetaDataModelProperty/>
+            <org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+              <typeQName>
+                <namespaceURI>http://controller/</namespaceURI>
+                <localPart>consultaPrestamoResponse</localPart>
+                <prefix></prefix>
+              </typeQName>
+            </org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+            <org.mule.common.metadata.property.StructureIdentifierMetaDataModelProperty>
+              <metaDataKey class="org.mule.common.metadata.DefaultMetaDataKey" reference="../../../../../org.mule.common.metadata.DefaultMetaDataKey"/>
+              <derivedStructure>false</derivedStructure>
+              <generatedStructure>false</generatedStructure>
+            </org.mule.common.metadata.property.StructureIdentifierMetaDataModelProperty>
+          </properties>
+        </metaDataModelPropertiesManager>
+        <fields>
+          <org.mule.common.metadata.DefaultMetaDataField>
+            <name>ns0:return</name>
+            <model class="org.mule.common.metadata.DefaultXmlMetaDataModel">
+              <dataType>XML</dataType>
+              <metaDataModelPropertiesManager>
+                <properties>
+                  <org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+                    <typeQName>
+                      <namespaceURI>http://controller/</namespaceURI>
+                      <localPart>string2stringHashMap</localPart>
+                      <prefix></prefix>
+                    </typeQName>
+                  </org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+                </properties>
+              </metaDataModelPropertiesManager>
+              <fields>
+                <org.mule.common.metadata.DefaultMetaDataField>
+                  <name>ns0:entry</name>
+                  <model class="org.mule.common.metadata.DefaultListMetaDataModel">
+                    <dataType>LIST</dataType>
+                    <metaDataModelPropertiesManager>
+                      <properties>
+                        <org.mule.common.metadata.property.xml.UnboundMetaDataProperty>
+                          <maxOccurs>2147483647</maxOccurs>
+                          <minOccurs>0</minOccurs>
+                        </org.mule.common.metadata.property.xml.UnboundMetaDataProperty>
+                      </properties>
+                    </metaDataModelPropertiesManager>
+                    <model class="org.mule.common.metadata.DefaultXmlMetaDataModel">
+                      <dataType>XML</dataType>
+                      <metaDataModelPropertiesManager>
+                        <properties/>
+                      </metaDataModelPropertiesManager>
+                      <fields>
+                        <org.mule.common.metadata.DefaultMetaDataField>
+                          <name>ns0:key</name>
+                          <model class="org.mule.common.metadata.DefaultSimpleMetaDataModel">
+                            <dataType>STRING</dataType>
+                            <metaDataModelPropertiesManager>
+                              <properties>
+                                <org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+                                  <typeQName>
+                                    <namespaceURI>http://www.w3.org/2001/XMLSchema</namespaceURI>
+                                    <localPart>string</localPart>
+                                    <prefix></prefix>
+                                  </typeQName>
+                                </org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+                              </properties>
+                            </metaDataModelPropertiesManager>
+                          </model>
+                          <accessType>READ_WRITE</accessType>
+                          <metaDataFieldPropertyManager>
+                            <properties>
+                              <org.mule.common.metadata.property.QNameMetaDataProperty>
+                                <name>
+                                  <namespaceURI>http://controller/</namespaceURI>
+                                  <localPart>key</localPart>
+                                  <prefix>ns0</prefix>
+                                </name>
+                              </org.mule.common.metadata.property.QNameMetaDataProperty>
+                            </properties>
+                          </metaDataFieldPropertyManager>
+                        </org.mule.common.metadata.DefaultMetaDataField>
+                        <org.mule.common.metadata.DefaultMetaDataField>
+                          <name>ns0:value</name>
+                          <model class="org.mule.common.metadata.DefaultSimpleMetaDataModel">
+                            <dataType>STRING</dataType>
+                            <metaDataModelPropertiesManager>
+                              <properties>
+                                <org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+                                  <typeQName reference="../../../../../../org.mule.common.metadata.DefaultMetaDataField/model/metaDataModelPropertiesManager/properties/org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty/typeQName"/>
+                                </org.mule.common.metadata.property.xml.SchemaTypeMetaDataProperty>
+                              </properties>
+                            </metaDataModelPropertiesManager>
+                          </model>
+                          <accessType>READ_WRITE</accessType>
+                          <metaDataFieldPropertyManager>
+                            <properties>
+                              <org.mule.common.metadata.property.QNameMetaDataProperty>
+                                <name>
+                                  <namespaceURI>http://controller/</namespaceURI>
+                                  <localPart>value</localPart>
+                                  <prefix>ns0</prefix>
+                                </name>
+                              </org.mule.common.metadata.property.QNameMetaDataProperty>
+                            </properties>
+                          </metaDataFieldPropertyManager>
+                        </org.mule.common.metadata.DefaultMetaDataField>
+                      </fields>
+                      <rootElement>
+                        <namespaceURI>http://controller/</namespaceURI>
+                        <localPart>consultaPrestamoResponse</localPart>
+                        <prefix>ns0</prefix>
+                      </rootElement>
+                      <schemas class="org.mule.common.metadata.StringBasedSchemaProvider">
+                        <schemas>
+                          <string>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&lt;xsd:schema xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:ns1=&quot;http://schemas.xmlsoap.org/soap/http&quot; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot; xmlns:tns=&quot;http://controller/&quot; xmlns:wsdl=&quot;http://schemas.xmlsoap.org/wsdl/&quot; attributeFormDefault=&quot;qualified&quot; elementFormDefault=&quot;qualified&quot; targetNamespace=&quot;http://controller/&quot;&gt;&#xd;
+  &lt;xsd:complexType name=&quot;string2stringHashMap&quot;&gt;&#xd;
+    &lt;xsd:sequence&gt;&#xd;
+      &lt;xsd:element maxOccurs=&quot;unbounded&quot; minOccurs=&quot;0&quot; name=&quot;entry&quot;&gt;&#xd;
+        &lt;xsd:complexType&gt;&#xd;
+          &lt;xsd:sequence&gt;&#xd;
+            &lt;xsd:element name=&quot;key&quot; type=&quot;xsd:string&quot;/&gt;&#xd;
+            &lt;xsd:element minOccurs=&quot;0&quot; name=&quot;value&quot; type=&quot;xsd:string&quot;/&gt;&#xd;
+          &lt;/xsd:sequence&gt;&#xd;
+        &lt;/xsd:complexType&gt;&#xd;
+      &lt;/xsd:element&gt;&#xd;
+    &lt;/xsd:sequence&gt;&#xd;
+  &lt;/xsd:complexType&gt;&#xd;
+  &lt;xsd:element name=&quot;consultaPrestamo&quot; type=&quot;tns:consultaPrestamo&quot;/&gt;&#xd;
+  &lt;xsd:complexType name=&quot;consultaPrestamo&quot;&gt;&#xd;
+    &lt;xsd:sequence/&gt;&#xd;
+  &lt;/xsd:complexType&gt;&#xd;
+  &lt;xsd:element name=&quot;consultaPrestamoResponse&quot; type=&quot;tns:consultaPrestamoResponse&quot;/&gt;&#xd;
+  &lt;xsd:complexType name=&quot;consultaPrestamoResponse&quot;&gt;&#xd;
+    &lt;xsd:sequence&gt;&#xd;
+      &lt;xsd:element minOccurs=&quot;0&quot; name=&quot;return&quot; nillable=&quot;true&quot; type=&quot;tns:string2stringHashMap&quot;/&gt;&#xd;
+    &lt;/xsd:sequence&gt;&#xd;
+  &lt;/xsd:complexType&gt;&#xd;
+&lt;/xsd:schema&gt;</string>
+                        </schemas>
+                        <encoding reference="../../../../../../../../../../../entry/org.mule.common.metadata.DefaultXmlMetaDataModel/schemas/encoding"/>
+                        <baseUri>http://localhost:8082/BancoChibcha?wsdl</baseUri>
+                      </schemas>
+                      <namespaceManager>
+                        <namespacePrefix class="tree-map">
+                          <entry>
+                            <string>http://controller/</string>
+                            <string>ns0</string>
+                          </entry>
+                        </namespacePrefix>
+                      </namespaceManager>
+                    </model>
+                    <isArray>false</isArray>
+                  </model>
+                  <accessType>READ_WRITE</accessType>
+                  <metaDataFieldPropertyManager>
+                    <properties>
+                      <org.mule.common.metadata.property.QNameMetaDataProperty>
+                        <name>
+                          <namespaceURI>http://controller/</namespaceURI>
+                          <localPart>entry</localPart>
+                          <prefix>ns0</prefix>
+                        </name>
+                      </org.mule.common.metadata.property.QNameMetaDataProperty>
+                    </properties>
+                  </metaDataFieldPropertyManager>
+                </org.mule.common.metadata.DefaultMetaDataField>
+              </fields>
+              <rootElement>
+                <namespaceURI>http://controller/</namespaceURI>
+                <localPart>consultaPrestamoResponse</localPart>
+                <prefix>ns0</prefix>
+              </rootElement>
+              <schemas class="org.mule.common.metadata.StringBasedSchemaProvider" reference="../fields/org.mule.common.metadata.DefaultMetaDataField/model/model/schemas"/>
+              <namespaceManager reference="../fields/org.mule.common.metadata.DefaultMetaDataField/model/model/namespaceManager"/>
+            </model>
+            <accessType>READ_WRITE</accessType>
+            <metaDataFieldPropertyManager>
+              <properties>
+                <org.mule.common.metadata.property.QNameMetaDataProperty>
+                  <name>
+                    <namespaceURI>http://controller/</namespaceURI>
+                    <localPart>return</localPart>
+                    <prefix>ns0</prefix>
+                  </name>
+                </org.mule.common.metadata.property.QNameMetaDataProperty>
+              </properties>
+            </metaDataFieldPropertyManager>
+          </org.mule.common.metadata.DefaultMetaDataField>
+        </fields>
+        <rootElement>
+          <namespaceURI>http://controller/</namespaceURI>
+          <localPart>consultaPrestamoResponse</localPart>
+          <prefix>ns0</prefix>
+        </rootElement>
+        <schemas class="org.mule.common.metadata.StringBasedSchemaProvider">
+          <schemas reference="../../fields/org.mule.common.metadata.DefaultMetaDataField/model/fields/org.mule.common.metadata.DefaultMetaDataField/model/model/schemas/schemas"/>
+          <encoding reference="../../../../entry/org.mule.common.metadata.DefaultXmlMetaDataModel/schemas/encoding"/>
+          <baseUri>http://localhost:8082/BancoChibcha?wsdl</baseUri>
+        </schemas>
+        <namespaceManager reference="../fields/org.mule.common.metadata.DefaultMetaDataField/model/fields/org.mule.common.metadata.DefaultMetaDataField/model/model/namespaceManager"/>
+      </org.mule.common.metadata.DefaultXmlMetaDataModel>
+    </entry>
+  </types>
+  <connectorName>Web_Service_Consumer</connectorName>
+</metadata__catalog__entry>

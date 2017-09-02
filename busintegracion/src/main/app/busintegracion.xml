@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml"
+	xmlns:json="http://www.mulesoft.org/schema/mule/json"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/cxf http://www.mulesoft.org/schema/mule/cxf/current/mule-cxf.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/current/mule-ws.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
+<http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8083" basePath="/integrationESB" doc:name="HTTP Listener Configuration"/>
+    <http:request-config name="HTTP_Request_Configuration" host="localhost" port="8081" basePath="/LatinBank" doc:name="HTTP Request Configuration"/>
+    <http:request-config name="HTTP_Request_Configuration1" host="localhost" port="8082" basePath="/BancoChibcha" doc:name="HTTP Request Configuration"/>
+    <cxf:configuration name="CXF_Configuration" enableMuleSoapHeaders="true" initializeStaticBusInstance="true" doc:name="CXF Configuration"/>
+    <ws:consumer-config name="Web_Service_Consumer" wsdlLocation="http://localhost:8082/BancoChibcha?wsdl" service="IConsultaPrestamo" port="IConsultaPrestamoPort" serviceAddress="http://localhost:8082/BancoChibcha" doc:name="Web Service Consumer"/>
+    <db:mysql-config name="MySQL_Configuration" host="192.99.73.159" port="3306" user="usrbanco" password="usrbanco" database="banco_pueblo" doc:name="MySQL Configuration"/>
+    <flow name="busintegracionFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/solicitud" allowedMethods="GET" doc:name="HTTP"/>
+        <set-payload value="#[message.inboundProperties.'http.query.params']" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <set-variable variableName="recievedData" value="#[payload]" doc:name="Variable recievedData"/>
+        <flow-ref name="BancoPuebloSub_Flow" doc:name="BancoChibchabSub_Flow"/>
+    </flow>
+    <sub-flow name="LatinBankbSub_Flow">
+        <http:request config-ref="HTTP_Request_Configuration" path="/prestamo/consultar" method="POST" doc:name="HTTP">
+            <http:request-builder>
+                <http:query-param paramName="data" value="#[flowVars.recievedData]"/>
+            </http:request-builder>
+        </http:request>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <set-variable variableName="latinBankData" value="#[payload]" doc:name="Variable latinBankData"/>
+    </sub-flow>
+    <sub-flow name="BancoChibchabSub_Flow">
+        <ws:consumer config-ref="Web_Service_Consumer" operation="consultaPrestamo" doc:name="Web Service Consumer"/>
+        <json:xml-to-json-transformer doc:name="XML to JSON"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+    </sub-flow>
+    <sub-flow name="BancoPuebloSub_Flow">
+        <db:select config-ref="MySQL_Configuration" doc:name="Database">
+            <db:parameterized-query><![CDATA[Select  tipo As tipoTasa, 
+		interes As interes
+From  	tasas_prestamo]]></db:parameterized-query>
+        </db:select>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+    </sub-flow>
+</mule>
