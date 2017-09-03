@@ -1,0 +1,11 @@
+{
+    "inputMessageMetadata": {
+        "flowVariables": {
+            "#[flowVars.interesAmerica]": {},
+            "#[flowVars.tipoTasaAmerica]": {}
+        }
+    },
+    "outputMessageMetadata": {},
+    "id": "44a6d2ff-22c1-4baf-8417-40c73bd6684e",
+    "version": "5.2.0.0"
+}

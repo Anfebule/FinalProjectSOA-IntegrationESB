@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:context="http://www.springframework.org/schema/context" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml"
+<mule xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp" xmlns:context="http://www.springframework.org/schema/context" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml"
 	xmlns:json="http://www.mulesoft.org/schema/mule/json"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http"
 	xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf"
@@ -16,7 +16,8 @@ http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/cor
 http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/current/mule-ws.xsd
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
-http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd">
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd
+http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd">
 <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8083" basePath="/integrationESB" doc:name="HTTP Listener Configuration"/>
     <http:request-config name="HTTP_Request_Configuration" host="localhost" port="8081" basePath="/LatinBank" doc:name="HTTP Request Configuration"/>
     <http:request-config name="HTTP_Request_Configuration1" host="localhost" port="8082" basePath="/BancoChibcha" doc:name="HTTP Request Configuration"/>
@@ -29,6 +30,7 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     <file:connector name="File" autoDelete="true" streaming="true" validateConnections="true" doc:name="File"/>
     <context:property-placeholder location="${mule.env}.properties"/>
     <http:request-config name="HTTP_Request_Configuration2" host="localhost" port="8084" basePath="/creditAgencyService" doc:name="HTTP Request Configuration"/>
+    <smtp:gmail-connector name="Gmail" validateConnections="true" doc:name="Gmail"/>
     <flow name="busintegracionFlow">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/solicitud" allowedMethods="GET" doc:name="HTTP"/>
         <set-payload value="#[message.inboundProperties.'http.query.params']" doc:name="Set Payload"/>
@@ -37,27 +39,101 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
         <set-variable variableName="recievedData" value="#[payload]" doc:name="Variable recievedData"/>
         <expression-transformer expression="#[['tipoIdentificacion':flowVars.recievedData.tipoIdentificacion,'numeroIdentificacion':flowVars.recievedData.numeroIdentificacion,'nombres':flowVars.recievedData.nombres,'apellidos':flowVars.recievedData.apellidos]]" doc:name="Entrada de Datos Expression"/>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
-        <flow-ref name="ConsultaElRiesgoDeTuCliente.comSub_Flow" doc:name="ConsultaElRiesgoDeTuCliente.comSub_Flow"/>
-        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
-        <set-variable variableName="CreditScore" value="#[payload.CreditProfile.CreditScore]" doc:name="CreditScore Variable"/>
-        <set-variable variableName="CreditHistoryLegth" value="#[payload.CreditProfile.CreditHistoryLegth]" doc:name="CreditHistoryLegth Variable"/>
+        <set-variable variableName="CreditScore" value="400" doc:name="CreditScore Variable"/>
+        <set-variable variableName="CreditHistoryLegth" value="7" doc:name="CreditHistoryLegth Variable"/>
         <choice doc:name="Cumple con las condiciones Choice">
-            <when expression="#[flowVars.CreditScore] &gt; 399 &amp;&amp; #[flowVars.CreditHistoryLegth] &gt; 6">
+            <when expression="#[flowVars.CreditScore &gt; 399 &amp;&amp; flowVars.CreditHistoryLegth &gt; 6 &amp;&amp; flowVars.recievedData.cantidadSolicitada &gt; 20000000]">
+                <flow-ref name="BancodeAmericaSub_Flow" doc:name="BancodeAmericaSub_Flow"/>
+                <set-variable variableName="interesAmerica" value="#[payload.interes]" doc:name="Variable interesAmerica"/>
+                <set-variable variableName="tipoTasaAmerica" value="#[payload.tipoTasa]" doc:name="Variable tipoTasaAmerica"/>
                 <choice doc:name="Choice">
-                    <when expression="">
-                        <logger level="INFO" doc:name="Logger"/>
+                    <when expression="#[flowVars.tipoTasaAmerica == 'NB' || flowVars.tipoTasaAmerica == 'BV']">
+                        <expression-transformer expression="#[flowVars.interesAmerica/2]" doc:name="Expression Bimensual"/>
+                    </when>
+                    <when expression="#[flowVars.tipoTasaAmerica == 'EA']">
+                        <expression-transformer expression="#[java.lang.Math.pow((1 + flowVars.interesAmerica),(30/360))-1]" doc:name="Expression Efectiva Anual"/>
                     </when>
                     <otherwise>
-                        <logger level="INFO" doc:name="Logger"/>
+                        <expression-transformer expression="#[payload]" doc:name="Expression"/>
                     </otherwise>
                 </choice>
+                <set-variable variableName="interesAmericaMV" value="#[payload]" doc:name="Variable interesAmericaMV"/>
+                <flow-ref name="BrokenBankSub_Flow" doc:name="BrokenBankSub_Flow"/>
+                <set-variable variableName="interesBroken" value="#[payload.interes]" doc:name="Variable interesBroken"/>
+                <set-variable variableName="tipoTasaBroken" value="#[payload.tipoTasa]" doc:name="Variable tipoTasaBroken"/>
+                <choice doc:name="Choice">
+                    <when expression="#[flowVars.tipoTasaBroken == 'NB' || flowVars.tipoTasaBroken == 'BV']">
+                        <expression-transformer expression="#[flowVars.interesBroken/2]" doc:name="Expression Bimensual"/>
+                    </when>
+                    <when expression="#[flowVars.tipoTasaBroken == 'EA']">
+                        <expression-transformer expression="#[java.lang.Math.pow((1 + flowVars.interesBroken),(30/360))-1]" doc:name="Expression Efectiva Anual"/>
+                    </when>
+                    <otherwise>
+                        <expression-transformer expression="#[payload]" doc:name="Expression"/>
+                    </otherwise>
+                </choice>
+                <set-variable variableName="interesBrokenMV" value="#[payload]" doc:name="Variable interesBrokenMV"/>
+                <choice doc:name="Choice">
+                    <when expression="#[flowVars.interesAmericaMV &lt;= flowVars.interesBrokenMV]">
+                        <set-payload value="Su mejor elecci&#243;n es Banco del Pueblo, con una tasa de inter&#233;s del #[flowVars.interesAmerica] #[flowVars.tipoTasaAmerica]" doc:name="Set Payload America"/>
+                    </when>
+                    <when expression="#[flowVars.interesAmericaMV &gt; flowVars.interesBrokenMV]">
+                        <set-payload value="Su mejor elecci&#243;n es Banco del Pueblo, con una tasa de inter&#233;s del #[flowVars.interesBroken] #[flowVars.tipoTasaBroken]" doc:name="Set Payload Broken"/>
+                    </when>
+                    <otherwise>
+                        <set-payload value="Ha ocurrido un error, por favor vuelva a intentarlo." doc:name="Set Payload"/>
+                    </otherwise>
+                </choice>
+                <flow-ref name="correoSub_Flow" doc:name="correoSub_Flow"/>
+            </when>
+            <when expression="#[flowVars.CreditScore &gt; 399 &amp;&amp; flowVars.CreditHistoryLegth &gt; 6 &amp;&amp; flowVars.recievedData.cantidadSolicitada &lt;= 20000000 &amp;&amp; flowVars.recievedData.cantidadSolicitada &gt;= 10000000]">
+                <flow-ref name="LatinBankbSub_Flow" doc:name="LatinBankbSub_Flow"/>
+                <set-variable variableName="interesLatin" value="#[payload.interes]" doc:name="Variable interesLatin"/>
+                <set-variable variableName="tipoTasaLatin" value="#[payload.tipoTasa]" doc:name="Variable tipoTasaLatin"/>
+                <flow-ref name="BancoChibchabSub_Flow" doc:name="BancoChibchabSub_Flow"/>
+                <set-variable variableName="interesChibcha" value="#[payload.interes]" doc:name="Variable interesChibcha"/>
+                <set-variable variableName="tipoTasaChibcha" value="#[payload.tipoTasa]" doc:name="Variable tipoTasaChibcha"/>
+                <choice doc:name="Choice">
+                    <when expression="">
+                        <expression-transformer expression="#[flowVars.interesChibcha]/2" doc:name="Expression Bimensual"/>
+                    </when>
+                    <when expression="">
+                        <expression-transformer expression="#[java.lang.Math.pow((1 + flowVars.interesChibcha),(30/360))-1]" doc:name="Expression Efectivo Anual"/>
+                    </when>
+                    <otherwise>
+                        <expression-transformer expression="#[payload]" doc:name="Expression"/>
+                    </otherwise>
+                </choice>
+                <choice doc:name="Choice">
+                    <when expression="#[flowVars.interesLatin &lt;= flowVars.interesChibcha]">
+                        <set-payload value="Su mejor elecci&#243;n es Latin Bank, con una tasa de inter&#233;s del #[flowVars.interesLatin] #[flowVars.tipoTasaLatin]" doc:name="Set Payload"/>
+                    </when>
+                    <when expression="#[flowVars.interesLatin &lt;= flowVars.interesChibcha]">
+                        <set-payload value="Su mejor elecci&#243;n es Banco Chibcha, con una tasa de inter&#233;s del #[flowVars.interesChibcha] #[flowVars.tipoTasaChibcha]" doc:name="Set Payload"/>
+                    </when>
+                    <otherwise>
+                        <set-payload value="Ha ocurrido un error, por favor vuelva a intentarlo." doc:name="Set Payload"/>
+                    </otherwise>
+                </choice>
+                <flow-ref name="correoSub_Flow" doc:name="correoSub_Flow"/>
+            </when>
+            <when expression="#[flowVars.CreditScore &gt; 399 &amp;&amp; flowVars.CreditHistoryLegth &gt; 6 &amp;&amp; flowVars.recievedData.cantidadSolicitada &lt; 10000000]">
+                <flow-ref name="BancoPuebloSub_Flow" doc:name="BancoPuebloSub_Flow"/>
+                <set-variable variableName="interesSeleccionado" value="#[payload.interes]" doc:name="Variable interesSeleccionado"/>
+                <set-variable variableName="tipoTasaSeleccionada" value="#[payload.tipoTasa]" doc:name="Variable tipoTasaSeleccionada"/>
+                <set-payload value="Su mejor elecci&#243;n es Banco del Pueblo, con una tasa de inter&#233;s del #[flowVars.interesSeleccionado] #[flowVars.tipoTasaSeleccionada]" doc:name="Set Payload"/>
+                <flow-ref name="correoSub_Flow" doc:name="correoSub_Flow"/>
             </when>
             <otherwise>
-                <logger level="INFO" doc:name="Logger"/>
+                <set-payload doc:name="Set Payload" value="Ha ocurrido un error, por favor vuelva a intentarlo."/>
+                <flow-ref name="correoSub_Flow" doc:name="correoSub_Flow"/>
             </otherwise>
         </choice>
     </flow>
     <sub-flow name="ConsultaElRiesgoDeTuCliente.comSub_Flow">
+        <set-variable variableName="payloadVar" value="#[payload]" doc:name="Variable"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
         <http:request config-ref="HTTP_Request_Configuration2" path="/creditProfile" method="POST" doc:name="HTTP">
             <http:request-builder>
                 <http:query-param paramName="Cliente" value="#[payload]"/>
@@ -79,7 +155,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
     <sub-flow name="BancoChibchabSub_Flow">
         <ws:consumer config-ref="Web_Service_Consumer" operation="consultaPrestamo" doc:name="Web Service Consumer"/>
         <json:xml-to-json-transformer doc:name="XML to JSON"/>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <logger message="BancoChibcha: #[payload]" level="INFO" doc:name="Logger"/>
     </sub-flow>
     <sub-flow name="BancoPuebloSub_Flow">
         <db:select config-ref="MySQL_Configuration" doc:name="Database">
@@ -87,8 +164,10 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		interes As interes
 From  	tasas_prestamo]]></db:parameterized-query>
         </db:select>
+        <expression-transformer expression="#[payload[0]]" doc:name="Expression"/>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <logger message="Banco Pueblo: #[payload]" level="INFO" doc:name="Logger"/>
     </sub-flow>
     <sub-flow name="BancodeAmericaSub_Flow">
         <db:select config-ref="MySQL_Configuration2" doc:name="Database">
@@ -96,12 +175,19 @@ From  	tasas_prestamo]]></db:parameterized-query>
 		interes
 From  	tasas_prestamo]]></db:parameterized-query>
         </db:select>
+        <expression-transformer expression="#[payload[0]]" doc:name="Expression"/>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
-        <logger level="INFO" doc:name="Logger"/>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <logger level="INFO" doc:name="Logger" message="Banco America: #[payload]"/>
     </sub-flow>
     <sub-flow name="BrokenBankSub_Flow">
-        <file:outbound-endpoint path="C:\Ejercicios" outputPattern="creditosBancos.xml" responseTimeout="10000" doc:name="File"/>
+        <file:outbound-endpoint path="C:\BrokenBank" outputPattern="creditosBancos.xml" responseTimeout="10000" doc:name="File"/>
         <json:xml-to-json-transformer doc:name="XML to JSON"/>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
         <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+    </sub-flow>
+    <sub-flow name="correoSub_Flow">
+        <smtp:outbound-endpoint host="smtp.gmail.com" port="587" user="afbl89%40gmail.com" password="Andr3$s890712-61221" connector-ref="Gmail" to="#[flowVars.recievedData.correo]" subject="FinalProjectSOA" responseTimeout="10000" doc:name="SMTP"/>
+        <set-payload value="en breve le llegara un correo con la informacion." doc:name="Set Payload"/>
     </sub-flow>
 </mule>

@@ -7,3 +7,4 @@ BancoChibchaController\String2StringHashMap.class
 BancoChibchaController\String2StringHashMap$Entry.class
 BancoChibchaController\IConsultaPrestamoPortType.class
 BancoChibchaController\ObjectFactory.class
+org\mule\transformers\ConversorTasa.class
