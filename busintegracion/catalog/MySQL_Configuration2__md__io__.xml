@@ -1,13 +1,13 @@
 <metadata__cache__entry>
   <version>5.2.0.0</version>
-  <connectorName>MySQL_Configuration</connectorName>
+  <connectorName>MySQL_Configuration2</connectorName>
   <metadataIo class="tree-map">
     <entry>
       <string>http://www.mulesoft.org/schema/mule/db/select</string>
       <map>
         <entry>
-          <string>Select  tipo As tipoTasa, 
-		interes As interes
+          <string>Select  tipoTasa, &#xd;
+		interes&#xd;
 From  	tasas_prestamo</string>
           <org.mule.tooling.metadata.cache.DefaultMetadataCacheEntry>
             <output class="org.mule.common.metadata.DefaultMetaData">

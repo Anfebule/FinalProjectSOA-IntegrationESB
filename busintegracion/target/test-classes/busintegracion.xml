@@ -58,9 +58,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
         </choice>
     </flow>
     <sub-flow name="ConsultaElRiesgoDeTuCliente.comSub_Flow">
-        <set-variable variableName="payloadVar" value="#[payload]" doc:name="Variable"/>
-        <object-to-string-transformer doc:name="Object to String"/>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
         <http:request config-ref="HTTP_Request_Configuration2" path="/creditProfile" method="POST" doc:name="HTTP">
             <http:request-builder>
                 <http:query-param paramName="Cliente" value="#[payload]"/>

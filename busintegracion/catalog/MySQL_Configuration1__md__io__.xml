@@ -1,14 +1,12 @@
 <metadata__cache__entry>
   <version>5.2.0.0</version>
-  <connectorName>MySQL_Configuration</connectorName>
+  <connectorName>MySQL_Configuration1</connectorName>
   <metadataIo class="tree-map">
     <entry>
       <string>http://www.mulesoft.org/schema/mule/db/select</string>
       <map>
         <entry>
-          <string>Select  tipo As tipoTasa, 
-		interes As interes
-From  	tasas_prestamo</string>
+          <string>SELECT puntaje, edad_historial FROM datos_clientes WHERE tipo =  #[flowVars.TipoDocumento] AND identificacion = #[flowVars.Identificacion]</string>
           <org.mule.tooling.metadata.cache.DefaultMetadataCacheEntry>
             <output class="org.mule.common.metadata.DefaultMetaData">
               <payload class="org.mule.common.metadata.DefaultListMetaDataModel">
@@ -23,9 +21,9 @@ From  	tasas_prestamo</string>
                   </metaDataModelPropertiesManager>
                   <fields>
                     <org.mule.common.metadata.DefaultMetaDataField>
-                      <name>interes</name>
+                      <name>edad_historial</name>
                       <model class="org.mule.common.metadata.DefaultSimpleMetaDataModel">
-                        <dataType>DOUBLE</dataType>
+                        <dataType>INTEGER</dataType>
                         <metaDataModelPropertiesManager>
                           <properties/>
                         </metaDataModelPropertiesManager>
@@ -50,13 +48,8 @@ From  	tasas_prestamo</string>
                       </metaDataFieldPropertyManager>
                     </org.mule.common.metadata.DefaultMetaDataField>
                     <org.mule.common.metadata.DefaultMetaDataField>
-                      <name>tipoTasa</name>
-                      <model class="org.mule.common.metadata.DefaultSimpleMetaDataModel">
-                        <dataType>STRING</dataType>
-                        <metaDataModelPropertiesManager>
-                          <properties/>
-                        </metaDataModelPropertiesManager>
-                      </model>
+                      <name>puntaje</name>
+                      <model class="org.mule.common.metadata.DefaultSimpleMetaDataModel" reference="../../org.mule.common.metadata.DefaultMetaDataField/model"/>
                       <accessType>READ_WRITE</accessType>
                       <metaDataFieldPropertyManager>
                         <properties>
@@ -71,7 +64,6 @@ From  	tasas_prestamo</string>
                               <org.mule.common.query.expression.GreaterOperator/>
                               <org.mule.common.query.expression.GreaterOrEqualsOperator/>
                               <org.mule.common.query.expression.NotEqualsOperator/>
-                              <org.mule.common.query.expression.LikeOperator/>
                             </supportedOperators>
                           </org.mule.common.metadata.field.property.dsql.DsqlQueryOperatorsMetaDataFieldProperty>
                         </properties>
