@@ -29,7 +29,7 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
     <db:mysql-config name="MySQL_Configuration2" host="192.99.73.159" port="3306" user="usrbanco" password="usrbanco" database="banco_america" doc:name="MySQL Configuration"/>
     <file:connector name="File" autoDelete="true" streaming="true" validateConnections="true" doc:name="File"/>
     <context:property-placeholder location="${mule.env}.properties"/>
-    <http:request-config name="HTTP_Request_Configuration2" host="localhost" port="8084" basePath="/creditAgencyService" doc:name="HTTP Request Configuration"/>
+    <http:request-config name="HTTP_Request_Configuration2" host="localhost" port="8085" basePath="/creditAgencyService" doc:name="HTTP Request Configuration"/>
     <smtp:gmail-connector name="Gmail" validateConnections="true" doc:name="Gmail"/>
     <file:connector name="File1" readFromDirectory="C:/BrokenBank" autoDelete="false" streaming="true" validateConnections="true" doc:name="File"/>
     <flow name="busintegracionFlow">
@@ -38,8 +38,7 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
         <json:object-to-json-transformer doc:name="Object to JSON"/>
         <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
         <set-variable variableName="recievedData" value="#[payload]" doc:name="Variable recievedData"/>
-        <expression-transformer expression="#[['tipoIdentificacion':flowVars.recievedData.tipoIdentificacion,'numeroIdentificacion':flowVars.recievedData.numeroIdentificacion,'nombres':flowVars.recievedData.nombres,'apellidos':flowVars.recievedData.apellidos]]" doc:name="Entrada de Datos Expression"/>
-        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <flow-ref name="ConsultaElRiesgoDeTuCliente.comSub_Flow" doc:name="ConsultaElRiesgoDeTuCliente.comSub_Flow"/>
         <set-variable variableName="CreditScore" value="400" doc:name="CreditScore Variable"/>
         <set-variable variableName="CreditHistoryLegth" value="7" doc:name="CreditHistoryLegth Variable"/>
         <choice doc:name="Cumple con las condiciones Choice">
@@ -145,15 +144,14 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
         </choice>
     </flow>
     <sub-flow name="ConsultaElRiesgoDeTuCliente.comSub_Flow">
-        <set-variable variableName="payloadVar" value="#[payload]" doc:name="Variable"/>
-        <object-to-string-transformer doc:name="Object to String"/>
-        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
-        <http:request config-ref="HTTP_Request_Configuration2" path="/creditProfile" method="POST" doc:name="HTTP">
-            <http:request-builder>
-                <http:query-param paramName="Cliente" value="#[payload]"/>
-            </http:request-builder>
+        <set-payload value="#[['Cliente':['tipoIdentificacion':flowVars.recievedData.tipoIdentificacion,'numeroIdentificacion':flowVars.recievedData.numeroIdentificacion,'nombres':flowVars.recievedData.nombres,'apellidos':flowVars.recievedData.apellidos]]]" doc:name="Set Payload"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+        <http:request config-ref="HTTP_Request_Configuration2" path="/creditProfile" method="POST" doc:name="HTTP" metadata:id="09ba414f-46ff-4796-b02b-17ad77ed93cb">
         </http:request>
-        <json:object-to-json-transformer returnClass="java.util.HashMap" doc:name="Entrada de datos JSON to Object"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
         <logger message="Riesgo: #[payload]" level="INFO" doc:name="Logger"/>
     </sub-flow>
     <sub-flow name="LatinBankbSub_Flow">
