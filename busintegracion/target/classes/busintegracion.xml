@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp" xmlns:context="http://www.springframework.org/schema/context" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml"
+<mule xmlns:imaps="http://www.mulesoft.org/schema/mule/imaps" xmlns:imap="http://www.mulesoft.org/schema/mule/imap" xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp" xmlns:context="http://www.springframework.org/schema/context" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:ws="http://www.mulesoft.org/schema/mule/ws" xmlns:metadata="http://www.mulesoft.org/schema/mule/metadata" xmlns:mulexml="http://www.mulesoft.org/schema/mule/xml"
 	xmlns:json="http://www.mulesoft.org/schema/mule/json"
 	xmlns:http="http://www.mulesoft.org/schema/mule/http"
 	xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf"
@@ -17,7 +17,9 @@ http://www.mulesoft.org/schema/mule/ws http://www.mulesoft.org/schema/mule/ws/cu
 http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
 http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-current.xsd
-http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd">
+http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd
+http://www.mulesoft.org/schema/mule/imap http://www.mulesoft.org/schema/mule/imap/current/mule-imap.xsd
+http://www.mulesoft.org/schema/mule/imaps http://www.mulesoft.org/schema/mule/imaps/current/mule-imaps.xsd">
 <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8083" basePath="/integrationESB" doc:name="HTTP Listener Configuration"/>
     <http:request-config name="HTTP_Request_Configuration" host="localhost" port="8081" basePath="/LatinBank" doc:name="HTTP Request Configuration"/>
     <http:request-config name="HTTP_Request_Configuration1" host="localhost" port="8082" basePath="/BancoChibcha" doc:name="HTTP Request Configuration"/>
@@ -29,9 +31,12 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
     <db:mysql-config name="MySQL_Configuration2" host="192.99.73.159" port="3306" user="usrbanco" password="usrbanco" database="banco_america" doc:name="MySQL Configuration"/>
     <file:connector name="File" autoDelete="true" streaming="true" validateConnections="true" doc:name="File"/>
     <context:property-placeholder location="${mule.env}.properties"/>
-    <http:request-config name="HTTP_Request_Configuration2" host="localhost" port="8085" basePath="/creditAgencyService" doc:name="HTTP Request Configuration"/>
+    <http:request-config name="HTTP_Request_Configuration2" host="localhost" port="8091" basePath="/creditAgencyService" doc:name="HTTP Request Configuration"/>
     <smtp:gmail-connector name="Gmail" validateConnections="true" doc:name="Gmail"/>
     <file:connector name="File1" readFromDirectory="C:/BrokenBank" autoDelete="false" streaming="true" validateConnections="true" doc:name="File"/>
+    <file:connector name="File2" readFromDirectory="C:\BrokenBank" autoDelete="false" streaming="true" validateConnections="true" doc:name="File"/>
+    <imaps:connector name="IMAP" mailboxFolder="MULA" validateConnections="true" deleteReadMessages="false" doc:name="IMAP"/>
+    <http:request-config name="HTTP_Request_Configuration3" host="localhost" port="8088" basePath="/brokenBank" doc:name="HTTP Request Configuration"/>
     <flow name="busintegracionFlow">
         <http:listener config-ref="HTTP_Listener_Configuration" path="/solicitud" allowedMethods="GET" doc:name="HTTP"/>
         <set-payload value="#[message.inboundProperties.'http.query.params']" doc:name="Set Payload"/>
@@ -39,8 +44,8 @@ http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smt
         <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
         <set-variable variableName="recievedData" value="#[payload]" doc:name="Variable recievedData"/>
         <flow-ref name="ConsultaElRiesgoDeTuCliente.comSub_Flow" doc:name="ConsultaElRiesgoDeTuCliente.comSub_Flow"/>
-        <set-variable variableName="CreditScore" value="400" doc:name="CreditScore Variable"/>
-        <set-variable variableName="CreditHistoryLegth" value="7" doc:name="CreditHistoryLegth Variable"/>
+        <set-variable variableName="CreditScore" value="#[payload.CreditProfile.CreditScore]" doc:name="CreditScore Variable"/>
+        <set-variable variableName="CreditHistoryLegth" value="#[payload.CreditProfile.CreditHistoryLegth]" doc:name="CreditHistoryLegth Variable"/>
         <choice doc:name="Cumple con las condiciones Choice">
             <when expression="#[flowVars.CreditScore &gt; 399 &amp;&amp; flowVars.CreditHistoryLegth &gt; 6 &amp;&amp; flowVars.recievedData.cantidadSolicitada &gt; 20000000]">
                 <flow-ref name="BancodeAmericaSub_Flow" doc:name="BancodeAmericaSub_Flow"/>
@@ -193,13 +198,14 @@ From  	tasas_prestamo]]></db:parameterized-query>
         <logger level="INFO" doc:name="Logger" message="Banco America: #[payload]"/>
     </sub-flow>
     <sub-flow name="BrokenBankSub_Flow">
-        <file:outbound-endpoint path="C:/BrokenBank" outputPattern="creditosBancos.xml" responseTimeout="10000" doc:name="File" connector-ref="File1"/>
-        <json:xml-to-json-transformer doc:name="XML to JSON"/>
+        <http:request config-ref="HTTP_Request_Configuration3" path="/productos/consultarproductos" method="POST" doc:name="HTTP"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
         <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
-        <logger message="Broken payload: #[payload]" level="INFO" doc:name="Logger"/>
+        <logger message="datos #[payload]" level="INFO" doc:name="Logger"/>
     </sub-flow>
     <sub-flow name="correoSub_Flow">
-        <smtp:outbound-endpoint host="smtp.gmail.com" port="587" user="afbl89%40gmail.com" password="Andr3$s890712-61221" connector-ref="Gmail" to="#[flowVars.recievedData.correo]" subject="FinalProjectSOA" responseTimeout="10000" doc:name="SMTP"/>
+        <smtp:outbound-endpoint host="smtp.gmail.com" port="587" user="jamartinezmz%40gmail.com" password="GundamWing95" connector-ref="Gmail" to="#[flowVars.recievedData.correo]" subject="FinalProjectSOA" responseTimeout="10000" doc:name="SMTP"/>
         <set-payload value="en breve le llegara un correo con la informacion." doc:name="Set Payload"/>
     </sub-flow>
 </mule>
